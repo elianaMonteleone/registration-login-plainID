@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Chat Room</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css"
+          rel="stylesheet"
+          integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC"
+          crossorigin="anonymous">
+    <style>
+        /* Custom styles */
+        .chat-header {
+            background-color: #28a745; /* Bootstrap green color */
+            color: white;
+            padding: 10px;
+            border-radius: 5px;
+        }
+        .chat-window {
+            background-color: #e8f5e9; /* Lighter shade for body */
+            border: 1px solid #28a745;
+            height: 400px;
+            overflow-y: scroll;
+            padding: 15px;
+        }
+        .input-group-text {
+            background-color: #28a745;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+<!-- Back to Users Button at the top left -->
+<div class="row mb-3">
+    <div class="col">
+        <a href="/main" class="btn" style="background-color: #28a745; color: white;">Back to main page</a>
+    </div>
+</div>
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="chat-header">
+                <h2>Chat Room <!-- - City: <span th:text="${chatCity}"></span>--></h2>
+                <!-- Conditional message for ROLE_ADMIN_SUPER -->
+            <!--    <div th:if="${isAdminSuper}">
+                    <p class="text-warning">As an Admin Super, you can chat with people from other cities but with the same user role.</p>
+                </div>-->
+                <!-- Email input for initiating chat -->
+                <form th:action="@{/startChat}" method="post" class="mt-3">
+                    <div class="input-group">
+                        <input type="email" class="form-control" placeholder="Enter email to chat with" name="chatWithEmail">
+                        <button class="btn input-group-text" type="submit">Start Chat</button>
+                    </div>
+                </form>
+                <!-- Display the name of the user to chat with, if available -->
+                <div th:if="${chatWithUser != null}" class="mt-2">
+                    <strong>Chatting with:</strong> <span th:text="${chatWithUser.email}"></span>
+                </div>
+            </div>
+            <div class="chat-window" id="chatWindow">
+                <div th:if="${messageSent != null}" class="sent-message">
+                    <strong>You:</strong> <span th:text="${messageSent}"></span>
+                </div>
+            </div>
+
+
+            <form id="sendMessageForm" th:action="@{/sendMessage}" method="post">
+                <div class="input-group mt-3">
+                    <input type="text" class="form-control" name="message" placeholder="Type a message...">
+                    <button class="btn input-group-text" type="submit">Send</button>
+                </div>
+            </form>
+
+            <div id="usersInCity" class="mt-4" th:if="${chatWithUser == null}">
+                <h3>Users Available:</h3>
+                <ul>
+                    <li th:each="user : ${usersInCity}">
+                        <span th:text="${user.firstName}"></span> <span th:text="${user.lastName}"></span>
+                        (<span th:text="${user.email}"></span>)
+                    </li>
+                </ul>
+            </div>
+
+
+
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-kQtW33rZJAHjyIOt+5CmcVjvrDgL17wgxaVmC6NcPIT3y09n5w6d1Sb5yUy7F/BI"
+        crossorigin="anonymous"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function() {
+        console.log("Script loaded and running"); // Check if script is running
+
+        $('#sendMessageForm').submit(function(event) {
+            event.preventDefault(); // Prevent the form from submitting via the browser
+
+            var message = $('input[name="message"]').val();
+            var chatWindow = $('#chatWindow');
+            var usersInCitySection = $('#usersInCity');
+
+            console.log("Form submitted"); // Check if this line is reached when submitting the form
+
+            // Append the message to the chat window
+            chatWindow.append('<div class="sent-message"><strong>You:</strong> ' + message + '</div>');
+
+            // Hide the "Users in Your City" section
+            usersInCitySection.hide();
+
+            console.log("Users in City section should be hidden now"); // Confirm this line is reached
+
+            // AJAX call to send the message to the server
+            $.post('/sendMessage', { message: message }, function(data) {
+                // Handle the response data from the server
+            });
+
+            // Clear the input field after sending
+            $('input[name="message"]').val('');
+        });
+    });
+</script>
+
+</body>
+</html>

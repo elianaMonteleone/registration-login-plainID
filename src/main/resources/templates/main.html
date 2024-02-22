@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>List of Users</title>
+    <style>
+        body {
+            background-color: black; /* Black background color */
+            color: white; /* White text color */
+            font-family: Arial, sans-serif; /* Use a nice font */
+        }
+        .green-button {
+            background-color: green; /* Green background color */
+            color: white; /* White text color */
+            padding: 20px 40px; /* Increase padding for a bigger button */
+            font-size: 24px; /* Larger font size */
+            border: none; /* No border */
+            border-radius: 5px; /* Rounded corners */
+            cursor: pointer; /* Pointer cursor on hover */
+            margin-top: 10px; /* Add some space above the button */
+        }
+        .description {
+            margin-bottom: 20px; /* Add some space below the text */
+        }
+        .alert {
+            color: red; /* Red text color for alerts */
+            margin-top: 20px; /* Space above the alert message */
+        }
+
+        .logout-button {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            padding: 10px 20px;
+            background-color: green; /* Red color for logout */
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+     /* Logo container styles */
+        #logo-container {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+        }
+
+        /* Logo styles */
+        #deloitte-logo {
+            max-width: 30%; /* Adjust the maximum width as needed */
+            max-height: 70vh; /* Adjust the maximum height as needed */
+            margin-top: 20px;
+            border-radius:50%;
+        }
+
+      .centered-content {
+        text-align: center;
+        margin: 20px auto;
+        color: #e8f5e9;
+        max-width: 500px;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* Modern and clean font */
+    }
+
+    .user-info-message {
+        margin-bottom: 10px;
+        color: white;
+        font-size: 30px;
+        font-weight: bold; /* Making the text bold */
+        font-style: italic; /* Adding italic style to the text */
+    }
+
+    .user-detail {
+        font-size: 18px; /* Adjust the size as needed */
+        margin: 5px 0; /* Adjust the spacing as needed */
+        color: white; /* Light green color for details */
+        font-family: 'Arial', sans-serif; /* Keeping it simple and readable */
+    }
+    </style>
+</head>
+<body>
+
+<!-- Logout button at the top left -->
+<form th:action="@{/logout}" method="post">
+    <button type="submit" class="logout-button">Logout</button>
+</form>
+
+<!-- Centered User Information Section -->
+<div class="centered-content">
+    <div class="user-info-message">
+        <p>Thanks <span th:text="${userName}"style="color: green;"></span>, here you have the information about your profile:</p>
+    </div>
+    <p class="user-detail"><strong>Name:</strong> <span th:text="${userName}" style="color: green;"></span></p>
+    <p class="user-detail"><strong>Job Function:</strong> <span th:each="role : ${userRoles}" th:text="${role} + ' '"style="color: green;"></span></p>
+</div>
+
+<div style="height:100vh; display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center;">
+    <div id="logo-container">
+        <img id="deloitte-logo" th:src="@{/static/weConnect.png}" alt="Deloitte Logo">
+    </div>
+    <div class="description">
+        <p>Here you have the possibility to read the list of Users, please click the button:</p>
+    </div>
+    <form th:action="@{/viewUserData}" method="post">
+        <button type="submit" class="green-button">Click here</button>
+    </form>
+    <div th:if="${notAllowed}" class="alert">
+        Sorry, you are not allowed to view the list of users.
+    </div>
+    <div th:if="${noRules}" class="alert">
+        Sorry, I can't find your role.
+    </div>
+</div>
+</body>
+</html>
+
